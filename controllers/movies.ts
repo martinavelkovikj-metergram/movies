@@ -1,9 +1,32 @@
 import { error } from "console";
 import { Movie } from "../model/Movie";
+import { ILike } from "typeorm";
 
 export const getAllMovies= async( req:any, res: any, next:any)=>{
+
     try{
-        const movies= await Movie.find();
+        
+        const { actor, imdbSort, yearSort  }= req.query;
+        let query= Movie.createQueryBuilder("movie");
+        if(actor){
+            query=query.where("movie.Actors LIKE :actor", {actor:`%${actor}%`});
+        } 
+        if(imdbSort){
+            const imdbSortDirection=imdbSort.toUpperCase()==="ASC" ? "ASC" :"DESC";
+            query= query.orderBy("movie.imdbRating", imdbSortDirection);
+        }
+
+        if(yearSort){
+            const yearSortDirection=yearSort.toUpperCase()==="ASC" ? "ASC" :"DESC";
+            query= query.orderBy("movie.Year", yearSortDirection);
+        }
+        let movies;
+        if(imdbSort){
+            movies= await query.select(["movie.Title", "movie.imdbRating"]).getMany();
+        }
+        else{
+            movies= await query.getMany();
+        }
         //console.log(movies);
         res.status(200).json({ movies: movies})
 
