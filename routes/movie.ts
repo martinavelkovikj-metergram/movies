@@ -1,10 +1,48 @@
 import express from "express";
-import { addMovie, deleteMovie, editMovie, getAllMovies, getMovieByImdID } from "../controllers/movies";
+export const router = express.Router();
 
-export const router=express.Router();
+import Movies from "../controllers/movies";
 
-router.get('/movies', getAllMovies)
-router.get('/movies/:imdb', getMovieByImdID )
-router.delete('/movies/:id', deleteMovie )
-router.post('/addMovie', addMovie)
-router.put('/editMovie/:id',editMovie)
+router.get("/movies/shortenedUrls", async (req, res) =>res.send(await new Movies().shortenUrl()));
+router.get("/movies/languages", async (req, res) =>res.send(await new Movies().getLanguages()));
+
+router.get("/movies/totalLengthOfAllMovies", async (req, res) => {
+  try {
+    const totalLength = await new Movies().getTotalLength();
+    res.send({ totalLength: totalLength });
+  } catch (err) {
+    res.status(500).send({ error: "Failed to retrieve total length" });
+  }
+});
+
+router.get("/movies/totalImdbVotes", async (req, res) => {
+  try {
+    const totalVotes = await new Movies().getTotalVotes();
+    res.send({ totalVotes: totalVotes });
+  } catch (err) {
+    res.status(500).send({ error: "Failed to retrieve total votes" });
+  }
+});
+
+router.get("/movies/totalImdbVotes", async (req, res) =>res.send(await new Movies().getTotalVotes()));
+router.get("/movies/imdbUrls", async (req, res) =>res.send(await new Movies().getImdbUrls()));
+
+router.delete("/movies/:id", async (req, res) => {
+  const { id } = req.params;
+  return res.send(await new Movies().deleteMovie(id));
+});
+
+router.get("/movies/:imdb", async (req, res) => {
+  const { imdb } = req.params;
+  return res.send(await new Movies().getMovieByImdID(imdb));
+});
+
+router.patch("/movies/:id", async (req, res) => {
+  const { id } = req.params;
+  res.send(await new Movies().editMovie(req.body, id));
+});
+
+router.get("/movies", async (req, res) =>res.send(await new Movies().getAllMovies(req.query)));
+router.post("/movies", async (req, res) =>res.send(await new Movies().addMovie(req.body)));
+
+

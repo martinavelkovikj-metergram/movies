@@ -1,0 +1,6 @@
+{
+  "type": "postgres",
+  "database": "postgres",
+  "entities": ["./model/Movie.ts"],
+  "migrations": ["./migrations/*.ts"]
+}
