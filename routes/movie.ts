@@ -3,8 +3,12 @@ export const router = express.Router();
 
 import Movies from "../controllers/movies";
 
-router.get("/movies/shortenedUrls", async (req, res) =>res.send(await new Movies().shortenUrl()));
-router.get("/movies/languages", async (req, res) =>res.send(await new Movies().getLanguages()));
+router.get("/movies/shortenedUrls", async (req, res) =>
+  res.send(await new Movies().shortenUrl())
+);
+router.get("/movies/languages", async (req, res) =>
+  res.send(await new Movies().getLanguages())
+);
 
 router.get("/movies/totalLengthOfAllMovies", async (req, res) => {
   try {
@@ -24,12 +28,18 @@ router.get("/movies/totalImdbVotes", async (req, res) => {
   }
 });
 
-router.get("/movies/totalImdbVotes", async (req, res) =>res.send(await new Movies().getTotalVotes()));
-router.get("/movies/imdbUrls", async (req, res) =>res.send(await new Movies().getImdbUrls()));
+router.get("/movies/imdbUrls", async (req, res) =>
+  res.send(await new Movies().getImdbUrls())
+);
 
 router.delete("/movies/:id", async (req, res) => {
-  const { id } = req.params;
-  return res.send(await new Movies().deleteMovie(id));
+  try {
+    const { id } = req.params;
+    const movieId = await new Movies().deleteMovie(parseInt(id));
+    res.send({ deletedMovieId: movieId });
+  } catch (err) {
+    res.status(500).send({ error: "Failed deleting movie" });
+  }
 });
 
 router.get("/movies/:imdb", async (req, res) => {
@@ -39,10 +49,12 @@ router.get("/movies/:imdb", async (req, res) => {
 
 router.patch("/movies/:id", async (req, res) => {
   const { id } = req.params;
-  res.send(await new Movies().editMovie(req.body, id));
+  res.send(await new Movies().editMovie(req.body, parseInt(id)));
 });
 
-router.get("/movies", async (req, res) =>res.send(await new Movies().getAllMovies(req.query)));
-router.post("/movies", async (req, res) =>res.send(await new Movies().addMovie(req.body)));
-
-
+router.get("/movies", async (req, res) =>
+  res.send(await new Movies().getAllMovies(req.query))
+);
+router.post("/movies", async (req, res) =>
+  res.send(await new Movies().addMovie(req.body))
+);

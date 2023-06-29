@@ -5,7 +5,6 @@ import { Movie } from "./model/Movie";
 import { router } from "./routes/movie";
 import { AppSource } from "./util/database";
 
-
 const app = express();
 app.use(express.json());
 app.use(router);

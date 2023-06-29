@@ -28,3 +28,5 @@ export type MovieParams = {
   Images: string[];
   ComingSoon: boolean;
 };
+
+

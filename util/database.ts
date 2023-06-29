@@ -1,16 +1,18 @@
 import { DataSource } from "typeorm";
 import { Movie } from "../model/Movie";
-import dotenv from 'dotenv';
+// import dotenv from "dotenv";
 
-dotenv.config();
+// dotenv.config();
+
+import { config } from '../config';
 
 export const AppSource = new DataSource({
   type: "postgres",
   host: "localhost",
   port: 5432,
-  username: process.env.DATABASE_USERNAME,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
+  username: config.db.username,
+  password: config.db.password,
+  database: config.db.database,
   entities: [Movie],
   synchronize: true,
 });

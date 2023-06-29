@@ -34,11 +34,12 @@ class Movies {
       }
       return movies;
     } catch (err: any) {
+      console.error(err);
       throw new Error("Movies not found");
     }
   }
 
-  async getMovieByImdID(imdb: any) {
+  async getMovieByImdID(imdb: string) {
     try {
       const movie = await Movie.findOne({
         where: {
@@ -47,11 +48,12 @@ class Movies {
       });
       return movie;
     } catch (err: any) {
+      console.error(err);
       throw new Error("Movie not found");
     }
   }
 
-  async deleteMovie(id: any) {
+  async deleteMovie(id: number) {
     try {
       const movie = (await Movie.findOne({
         where: {
@@ -59,156 +61,68 @@ class Movies {
         },
       })) as Movie;
       await Movie.remove(movie);
-      return movie;
+      return id;
     } catch (err: any) {
-      throw new Error("Movie not found");
+      console.error(err);
+      throw new Error("Delete movie failed");
     }
   }
 
   async addMovie(params: MovieParams) {
-    const {
-      Title,
-      Year,
-      Rated,
-      Released,
-      Runtime,
-      Genre,
-      Director,
-      Writer,
-      Actors,
-      Plot,
-      Language,
-      Country,
-      Awards,
-      Poster,
-      Metascore,
-      imdbRating,
-      imdbVotes,
-      imdbID,
-      Type,
-      Response,
-      Images,
-      ComingSoon,
-    } = params;
-
     try {
-      const movie = await Movie.create({
-        Title: Title,
-        Year: Year,
-        Rated: Rated,
-        Released: Released,
-        Runtime: Runtime,
-        Genre: Genre,
-        Director: Director,
-        Writer: Writer,
-        Actors: Actors,
-        Plot: Plot,
-        Language: Language,
-        Country: Country,
-        Awards: Awards,
-        Poster: Poster,
-        Metascore: Metascore,
-        imdbRating: imdbRating,
-        imdbVotes: imdbVotes,
-        imdbID: imdbID,
-        Type: Type,
-        Response: Response,
-        Images: Images,
-        ComingSoon: ComingSoon,
-      });
-
-      await movie.save();
-      return movie;
+      const movie = new Movie();
+      Object.assign(movie, params);
+      const newMovie = await movie.save();
+      return newMovie;
     } catch (err: any) {
-      throw new Error("Movie not found");
+      console.error(err);
+      throw new Error("Add movie failed");
     }
   }
 
-  async editMovie(params: MovieParams, id: any) {
-    const {
-      Title,
-      Year,
-      Rated,
-      Released,
-      Runtime,
-      Genre,
-      Director,
-      Writer,
-      Actors,
-      Plot,
-      Language,
-      Country,
-      Awards,
-      Poster,
-      Metascore,
-      imdbRating,
-      imdbVotes,
-      imdbID,
-      Type,
-      Response,
-      Images,
-      ComingSoon,
-    } = params;
-
+  async editMovie(params: Partial<MovieParams>, id: number) {
     try {
-      const movie = (await Movie.findOne({
+      const movie = await Movie.findOne({
         where: {
           Id: id,
         },
-      })) as Movie;
-
-      movie.Title = Title;
-      movie.Year = Year;
-      movie.Rated = Rated;
-      movie.Released = Released;
-      movie.Runtime = Runtime;
-      movie.Genre = Genre;
-      movie.Director = Director;
-      movie.Writer = Writer;
-      movie.Actors = Actors;
-      movie.Plot = Plot;
-      movie.Language = Language;
-      movie.Country = Country;
-      movie.Awards = Awards;
-      movie.Poster = Poster;
-      movie.Metascore = Metascore;
-      movie.imdbRating = imdbRating;
-      movie.imdbVotes = imdbVotes;
-      movie.imdbID = imdbID;
-      movie.Type = Type;
-      movie.Response = Response;
-      movie.Images = Images;
-      movie.ComingSoon = ComingSoon;
+      });
+      if (!movie) {
+        throw new Error("Movie not found");
+      }
+      Object.assign(movie, params);
       await movie.save();
+
       return movie;
     } catch (err: any) {
-      throw new Error("Movie not found");
+      console.error(err);
+      throw new Error("Editing movie failed");
     }
   }
 
   async getTotalLength() {
     try {
       const movies = await Movie.find();
-      console.log(movies);
-      let total = 0;
-      let minutes;
-      for (const movie of movies) {
-        if (movie.Runtime !== "N/A") {
-          if (movie.Type === "series") {
-            minutes = parseInt(movie.Runtime.split(" ")[0]);
-            let episodePerSeason = 10;
-            let seasons = 10;
-            total += episodePerSeason * seasons * minutes;
-          } else {
-            minutes = movie.Runtime.split(" ")[0];
-            total += +minutes;
-          }
+
+      const total = movies.reduce((accumulator, movie) => {
+        let minutes;
+        if (movie.Runtime !== "N/A" && movie.Type === "series") {
+          minutes = parseInt(movie.Runtime.split(" ")[0]);
+          const episodePerSeason = 10;
+          const seasons = 10;
+          return accumulator + episodePerSeason * seasons * minutes;
+        } else if (movie.Runtime !== "N/A" && movie.Type === "movie") {
+          minutes = parseInt(movie.Runtime.split(" ")[0]);
+          return accumulator + minutes;
         }
-      }
+        return accumulator;
+      }, 0);
+
       console.log(total);
       return total;
-    } catch (err: any) {
-      throw new Error("Movie not found");
+    } catch (err) {
+      console.error(err);
+      throw new Error("Calculating total length failed");
     }
   }
 
@@ -216,17 +130,20 @@ class Movies {
     try {
       const movies = await Movie.find();
       console.log(movies);
-      let total = 0;
-      for (const movie of movies) {
+
+      const total = movies.reduce((accumulator, movie) => {
         if (movie.imdbVotes !== "N/A") {
-          let votes = parseInt(movie.imdbVotes.replace(",", ""), 10);
-          total += +votes;
+          const votes = parseInt(movie.imdbVotes.replace(",", ""), 10);
+          return accumulator + votes;
         }
-      }
+        return accumulator;
+      }, 0);
+
       console.log(total);
       return total;
-    } catch (err: any) {
-      throw new Error("Movie not found");
+    } catch (err) {
+      console.error(err);
+      throw new Error("Calculating total votes failed");
     }
   }
 
@@ -243,7 +160,8 @@ class Movies {
       }
       return urls;
     } catch (err: any) {
-      throw new Error("Movie not found");
+      console.error(err);
+      throw new Error("Fetching imdbUrls failed");
     }
   }
 
@@ -255,6 +173,8 @@ class Movies {
       const languageMappings: { [key: string]: string } = {
         English: "ENG",
         Spanish: "ESP",
+        French: "FRA",
+        Russian: "RS",
       };
 
       const shortenLanguages: string[] = [];
@@ -271,7 +191,8 @@ class Movies {
       }
       return shortenLanguages;
     } catch (err: any) {
-      throw new Error("Movie not found");
+      console.error(err);
+      throw new Error("Shortening languages failed");
     }
   }
 
@@ -285,17 +206,15 @@ class Movies {
           const randomImageIndex = Math.floor(
             Math.random() * movie.Images.length
           );
-          console.log(randomImageIndex);
           const randomImageURL = await movie.Images[randomImageIndex];
-          console.log(randomImageURL);
           const shortURL = await shortenURLs(randomImageURL);
-          console.log(shortURL);
           shortenedUrls.push(shortURL);
         })
       );
       return shortenedUrls;
     } catch (err: any) {
-      throw new Error("Movie not found");
+      console.error(err);
+      throw new Error("Shortening urls failed");
     }
   }
 }

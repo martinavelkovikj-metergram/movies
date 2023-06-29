@@ -1,7 +1,10 @@
+//import dotenv from "dotenv";
+
+//dotenv.config();
+import { config } from './config';
 
 export async function shortenURLs(longURL: string): Promise<string> {
-  
-  const response = await fetch("https://gotiny.cc/api", {
+  const response = await fetch(config.goTinyUrl ?? "https://gotiny.cc/api" , {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ input: longURL }),
