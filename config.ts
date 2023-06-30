@@ -10,6 +10,7 @@ interface DbConfig {
 interface Config {
   db: DbConfig;
   goTinyUrl: string;
+  apiKey: string;
 }
 
 function readEnvVariable(key: string): string {
@@ -28,6 +29,7 @@ const config: Config = {
     database: readEnvVariable("DATABASE_NAME"),
   },
   goTinyUrl: readEnvVariable("GOTINY_URL"),
+  apiKey: readEnvVariable("API_KEY")
 };
 
 export { config };

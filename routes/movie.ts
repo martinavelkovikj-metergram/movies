@@ -1,8 +1,15 @@
-import express from "express";
+import express, { Request, Response } from "express";
 export const router = express.Router();
+
+import {
+  validateMovieFields,
+  handleValidationErrors,
+} from "../util/movieValidation";
+import apiKeyMiddleware from "../middleware/apiKeyMiddleware";
 
 import Movies from "../controllers/movies";
 
+router.use(apiKeyMiddleware);
 router.get("/movies/shortenedUrls", async (req, res) =>
   res.send(await new Movies().shortenUrl())
 );
@@ -47,14 +54,23 @@ router.get("/movies/:imdb", async (req, res) => {
   return res.send(await new Movies().getMovieByImdID(imdb));
 });
 
-router.patch("/movies/:id", async (req, res) => {
-  const { id } = req.params;
-  res.send(await new Movies().editMovie(req.body, parseInt(id)));
-});
+router.patch(
+  "/movies/:id",
+  validateMovieFields,
+  handleValidationErrors,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    res.send(await new Movies().editMovie(req.body, parseInt(id)));
+  }
+);
 
 router.get("/movies", async (req, res) =>
   res.send(await new Movies().getAllMovies(req.query))
 );
-router.post("/movies", async (req, res) =>
-  res.send(await new Movies().addMovie(req.body))
+router.post(
+  "/movies",
+  validateMovieFields,
+  handleValidationErrors,
+  async (req: Request, res: Response) =>
+    res.send(await new Movies().addMovie(req.body))
 );
