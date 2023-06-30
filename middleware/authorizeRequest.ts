@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { config } from "../config";
 
-const apiKeyMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const authorizeRequest = (req: Request, res: Response, next: NextFunction) => {
   const apiKey = req.headers["api-key"];
 
   if (!apiKey || apiKey !== config.apiKey) {
@@ -11,4 +11,4 @@ const apiKeyMiddleware = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default apiKeyMiddleware;
+export default authorizeRequest;

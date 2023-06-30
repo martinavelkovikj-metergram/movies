@@ -5,11 +5,11 @@ import {
   validateMovieFields,
   handleValidationErrors,
 } from "../util/movieValidation";
-import apiKeyMiddleware from "../middleware/apiKeyMiddleware";
+import authorizeRequest from "../middleware/authorizeRequest";
 
 import Movies from "../controllers/movies";
 
-router.use(apiKeyMiddleware);
+router.use(authorizeRequest);
 router.get("/movies/shortenedUrls", async (req, res) =>
   res.send(await new Movies().shortenUrl())
 );
