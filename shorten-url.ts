@@ -1,6 +1,3 @@
-//import dotenv from "dotenv";
-
-//dotenv.config();
 import { config } from './config';
 
 export async function shortenURLs(longURL: string): Promise<string> {

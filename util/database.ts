@@ -1,8 +1,5 @@
 import { DataSource } from "typeorm";
 import { Movie } from "../model/Movie";
-// import dotenv from "dotenv";
-
-// dotenv.config();
 
 import { config } from '../config';
 

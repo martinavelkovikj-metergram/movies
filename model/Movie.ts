@@ -1,4 +1,5 @@
 import { Entity, BaseEntity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { MovieParams } from "../util/types";
 
 @Entity("movie")
 export class Movie extends BaseEntity {
@@ -70,4 +71,11 @@ export class Movie extends BaseEntity {
 
   @Column({ default: false })
   ComingSoon!: boolean;
+
+  constructor(movieParams?: Partial<MovieParams>) {
+    super();
+    if (movieParams) {
+      Object.assign(this, movieParams);
+    }
+  }
 }

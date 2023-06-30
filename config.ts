@@ -14,8 +14,6 @@ interface Config {
 
 function readEnvVariable(key: string): string {
   const value = process.env[key];
-  //console.log(value);
-
   if (!value) {
     throw new Error(`Missing required environment variable: ${key}`);
   }
