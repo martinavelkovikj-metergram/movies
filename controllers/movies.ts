@@ -1,6 +1,7 @@
 import { Movie } from "../model/Movie";
 import { shortenURLs } from "../shorten-url";
 import { MovieParams, MovieQuerableParams } from "../util/types";
+import { isValidURL } from "../util/url-checker";
 
 class Movies {
   async getAllMovies(params: MovieQuerableParams) {
@@ -207,8 +208,10 @@ class Movies {
             Math.random() * movie.Images.length
           );
           const randomImageURL = await movie.Images[randomImageIndex];
-          const shortURL = await shortenURLs(randomImageURL);
-          shortenedUrls.push(shortURL);
+          if (isValidURL(randomImageURL)) {
+            const shortURL = await shortenURLs(randomImageURL);
+            shortenedUrls.push(shortURL);
+          }
         })
       );
       return shortenedUrls;
@@ -218,4 +221,5 @@ class Movies {
     }
   }
 }
+
 export default Movies;

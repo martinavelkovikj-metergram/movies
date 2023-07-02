@@ -11,8 +11,8 @@ export async function shortenURLs(longURL: string): Promise<string> {
     throw new Error(`Failed to shorten URL. Status: ${response.status}`);
   }
 
-  const data = (await response.json()) as { output: string };
-  const shortURL: string = data.output;
+  const data = (await response.json());
+  console.log(data);
 
-  return shortURL;
+  return data[0].code;
 }

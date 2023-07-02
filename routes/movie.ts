@@ -17,7 +17,7 @@ router.get("/movies/languages", async (req, res) =>
   res.send(await new Movies().getLanguages())
 );
 
-router.get("/movies/totalLengthOfAllMovies", async (req, res) => {
+router.get("/movies/totalLength", async (req, res) => {
   try {
     const totalLength = await new Movies().getTotalLength();
     res.send({ totalLength: totalLength });
