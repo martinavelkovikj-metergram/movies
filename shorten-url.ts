@@ -12,7 +12,5 @@ export async function shortenURLs(longURL: string): Promise<string> {
   }
 
   const data = (await response.json());
-  console.log(data);
-
   return data[0].code;
 }

@@ -6,3 +6,7 @@ export function isValidURL(url: string): boolean {
       return false;
     }
   }
+
+  export function randomNumber(): number{
+    return Math.floor(Math.random() * 3);
+  }
